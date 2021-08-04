@@ -4,6 +4,10 @@ import numpy as np
 import scipy.stats as si
 import matplotlib.pyplot as plt
 
+def find_nearest(array, value):
+    array = np.asarray(array)
+    idx = (np.abs(array - value)).argmin()
+    return array[idx]
 
 @dataclass
 class Option:
@@ -178,3 +182,22 @@ class OptionPortfolio:
         print(f"Porfolio Vega: {port_vega}")
         print(f"Porfolio Theta: {port_theta}")
         print("")
+
+    def payoff_data(self, lower_bound, upper_bound, eval_date):
+        y_sum = np.zeros(100)
+        for i in self.portfolio:
+            i.t = eval_date
+            x_sum, y = i.payoff_data(lower_bound, upper_bound)
+            y_sum += y
+    
+        return x_sum, y_sum
+
+    def draw_payoff_diagram(self, lower_bound, upper_bound, eval_date, U):
+        x, y = self.payoff_data(lower_bound, upper_bound, eval_date)
+        # dot_x = self.portfolio[0].S
+        dot_x = find_nearest(x, U)
+        y_index = np.where(x == dot_x)[0][0]
+        dot_y = y[y_index]
+        plt.scatter(dot_x, dot_y, c='red')
+        plt.annotate(f"  {round(dot_y, 3)}", (dot_x, dot_y))
+        plt.plot(x, y)
