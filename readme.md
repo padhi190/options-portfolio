@@ -120,7 +120,7 @@ Theta: -0.078576 (-78.576 Total)
 
 ## Option Portfolio
 
-```
+```py
 class OptionPortfolio:
     portfolio: list[Option]
 
